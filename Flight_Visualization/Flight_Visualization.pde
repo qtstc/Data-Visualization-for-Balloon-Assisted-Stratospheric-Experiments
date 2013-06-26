@@ -6,7 +6,7 @@ BufferedReader r;
 OrientationModule orientation;
 
 void setup() {
-  size(1000, 600,P3D);
+  size(800, 600,P3D);
   noStroke();
   
   ArrayList<Calendar> time = new ArrayList<Calendar>();
@@ -31,9 +31,9 @@ void setup() {
     e.printStackTrace();
   }
   
-  orientation = new OrientationModule(100,100,100,100,100,orientationData,time);
+  orientation = new OrientationModule(400,300,100,100,100,orientationData,time);
   
-  hs1 = new TimelineScrollbar(0, height-8, width, 16,100,1000,new Date(2013,6,11,15,1,0));
+  hs1 = new TimelineScrollbar(0, height-16, width, 16,100,time);
 }
 
 
@@ -46,9 +46,9 @@ Calendar getCalendar(long millis)
 
 void draw() {
   background(255);
-  //orientation.drawData(getCalendar(100));
+  orientation.drawData(hs1.index);
   hs1.update();
   hs1.display();
-  orientation.drawData(getCalendar(2100));
+  //orientation.drawData();
   stroke(0);
 }

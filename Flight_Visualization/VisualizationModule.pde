@@ -37,14 +37,10 @@ abstract class VisualizationModule
    */
   protected abstract void draw(ArrayList<Float> data);
   
-  private int getDataPosition(Calendar c)
-  {
-    return (int)((c.getTimeInMillis()-startingTime)/interval);
-  }
   
-  public void drawData(Calendar c)
+  public void drawData(int i)
   {
-    draw(generatedData.get(getDataPosition(c)));
+    draw(generatedData.get(i));
   }
   
   /**
@@ -56,13 +52,12 @@ abstract class VisualizationModule
   {
     startingTime = dataTime.get(0).getTimeInMillis();
     Calendar endingTime = dataTime.get(dataTime.size()-1);
-    int dataNum = (int)((endingTime.getTimeInMillis() -startingTime)/interval+1);//We assume the desired interval is smaller than the interval of the original data.
     generatedData = new ArrayList<ArrayList<Float>>();
     for(int i = 0;i<originalData.size()-1;i++)
     {
       long startTime = dataTime.get(i).getTimeInMillis();
       long stopTime = dataTime.get(i+1).getTimeInMillis();
-      long middle = (interval - (stopTime-startTime)%interval)%interval + startTime;
+      long middle = (interval - startTime%interval)%interval + startTime;
       while(middle < stopTime)
       {
         ArrayList<Float> generated = map(startTime,stopTime,originalData.get(i),originalData.get(i+1),middle);
@@ -72,8 +67,9 @@ abstract class VisualizationModule
     }
     
     //Add the last data point in.
-    if((endingTime.getTimeInMillis() - startingTime)%interval == 0)
+    if(endingTime.getTimeInMillis()%interval == 0)
       generatedData.add(originalData.get(originalData.size()-1));
+      
   }
   
   protected ArrayList<Float> map(long startTime, long stopTime, ArrayList<Float> start, ArrayList<Float> stop, long middle)

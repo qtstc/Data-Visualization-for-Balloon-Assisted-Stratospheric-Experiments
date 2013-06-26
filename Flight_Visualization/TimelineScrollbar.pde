@@ -2,39 +2,62 @@ import java.util.Date;
 
 class TimelineScrollbar {
   int swidth, sheight;    // width and height of bar
-  float xpos, ypos;       // x and y position of bar
+  float x, y;       // x and y position of bar
   float spos, newspos;    // x position of slider
   float sposMin, sposMax; // max and min values of slider
-  int loose = 1;              // how loose/heavy
   boolean over;           // is the mouse over the slider?
   boolean locked;
   float ratio;
-  
-  int cellNumber; // The number of different positions in the scrollbar. Each cell/position correspond to one set of flight data.
-  int timeInterval; // The time interval at which data was recorded. In millisecond.
-  Date startingTime; // The time when the first data was taken.
 
-  TimelineScrollbar (float xp, float yp, int swidth, int sheight, int cellNumber, int timeInterval, Date startingTime) {
+  int cellNumber; // The number of different positions in the scrollbar. Each cell/position correspond to one set of flight data.
+  float cellWidth;
+  int interval; // The time interval at which data was recorded. In millisecond.
+  int index;
+  Long startingTime;
+  
+  float timewidth = 100;
+  float buttonwidth = 50;
+  float sliderwidth = 10;
+
+  TimelineScrollbar (float x, float y, int swidth, int sheight, int interval, ArrayList<Calendar> dataTime) {
     this.swidth = swidth;
     this.sheight = sheight;
     int widthtoheight = swidth - sheight;
     ratio = (float)swidth / (float)widthtoheight;
-    xpos = xp;
-    ypos = yp-sheight/2;
-    spos = xpos + swidth/2 - sheight/2;
+    this.x = x;
+    this.y = y;
+    sposMin = x + timewidth + buttonwidth;
+    sposMax = x + swidth-sliderwidth;
+    spos = sposMin;
     newspos = spos;
-    sposMin = xpos;
-    sposMax = xpos + swidth - sheight;
+
+    this.cellNumber = getCount(dataTime.get(0).getTimeInMillis(),dataTime.get(dataTime.size()-1).getTimeInMillis(),interval);
     
-    this.cellNumber = cellNumber;
-    this.timeInterval = timeInterval;
-    this.startingTime = startingTime;
+    cellWidth = ((sposMax+sliderwidth) - sposMin)/cellNumber;
+    this.interval = interval;
+    long first = dataTime.get(0).getTimeInMillis();
+    startingTime = (interval - first%interval)%interval + first;
+  }
+  
+  private void updateIndex()
+  {
+    index = (int)((spos - sposMin)/cellWidth);
+  }
+  
+  private int getCount(long a, long b, long interval)
+  {
+    long aRes = a%interval;
+    long bRes = b%interval;
+    long first = (interval - aRes)%interval + a;
+    long last = b - b%interval;
+    return (int)((last-first)/interval + 1);
   }
 
   void update() {
     if (overEvent()) {
       over = true;
-    } else {
+    } 
+    else {
       over = false;
     }
     if (mousePressed && over) {
@@ -47,8 +70,9 @@ class TimelineScrollbar {
       newspos = constrain(mouseX-sheight/2, sposMin, sposMax);
     }
     if (abs(newspos - spos) > 1) {
-      spos = spos + (newspos-spos)/loose;
+      spos = spos + newspos-spos;
     }
+    updateIndex();
   }
 
   float constrain(float val, float minv, float maxv) {
@@ -56,10 +80,11 @@ class TimelineScrollbar {
   }
 
   boolean overEvent() {
-    if (mouseX > xpos && mouseX < xpos+swidth &&
-       mouseY > ypos && mouseY < ypos+sheight) {
+    if (mouseX > x && mouseX < x+swidth &&
+      mouseY > y && mouseY < y+sheight) {
       return true;
-    } else {
+    } 
+    else {
       return false;
     }
   }
@@ -67,14 +92,26 @@ class TimelineScrollbar {
   void display() {
     noStroke();
     fill(204);
-    rect(xpos, ypos, swidth, sheight);
+    rect(x,y,swidth,sheight);
+    fill(150);
+    text(startingTime+index*interval ,x,y+sheight);
+    fill(50);
+    rect(x+timewidth,y , buttonwidth, sheight);
     if (over || locked) {
       fill(0, 0, 0);
-    } else {
+    } 
+    else {
       fill(102, 102, 102);
     }
-    rect(spos, ypos, sheight, sheight);
+    rect(spos, y, sliderwidth, sheight);
   }
+  
+Calendar getCalendar(long millis)
+{
+  Calendar c = Calendar.getInstance();
+  c.setTimeInMillis(millis);
+  return c;
+}
 
   float getPos() {
     // Convert spos to be values between
@@ -82,3 +119,4 @@ class TimelineScrollbar {
     return spos * ratio;
   }
 }
+

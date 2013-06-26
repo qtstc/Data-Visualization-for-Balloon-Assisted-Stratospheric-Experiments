@@ -18,9 +18,9 @@ class OrientationModule extends VisualizationModule
     rotateZ(radians(data.get(1)));
     rotateY(radians(data.get(2)));
     strokeWeight(2);
-    stroke(#990000);
-    fill(#009999, 220);
-    box(100,100,100);
+    stroke(#B8B8B8);
+    fill(#888888, 220);
+    box(200,200,400);
     popMatrix();
   }
   
