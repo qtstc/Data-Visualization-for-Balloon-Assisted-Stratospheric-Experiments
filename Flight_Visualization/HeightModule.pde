@@ -9,5 +9,6 @@ class HeightModule extends VisualizationModule
   
   void draw(Float[] data)
   {
+    
   }
 }

@@ -34,7 +34,7 @@ void setup() {
     e.printStackTrace();
   }
 
-  modules.add(new OrientationModule(150, 150, 300, 400, orientationData));
+  modules.add(new OrientationModule(400, 280, 600, 400, orientationData));
 
   generateData(100);
   hs1 = new TimelineScrollbar(0, height-16, width, 16,newTime);

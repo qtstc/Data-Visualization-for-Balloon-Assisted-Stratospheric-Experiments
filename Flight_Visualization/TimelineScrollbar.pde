@@ -1,4 +1,5 @@
 import java.util.Date;
+import java.text.SimpleDateFormat;
 
 class TimelineScrollbar {
   private int swidth, sheight;    // width and height of bar
@@ -12,11 +13,19 @@ class TimelineScrollbar {
   private int cellNumber; // The number of different positions in the scrollbar. Each cell/position correspond to one set of flight data.
   private float cellWidth;
   private int index;
-  
-  static final float timewidth = 100;
+
+  static final float timewidth = 130;
   static final float buttonwidth = 50;
   static final float sliderwidth = 10;
+  
+  private float timex;
+  private float textheight;
+  private float[] trig;
+  private float[] pause;
+  
 
+  private boolean playing;
+  SimpleDateFormat sdf;
   TimelineScrollbar (float x, float y, int swidth, int sheight, ArrayList<Long> newTime) {
     this.swidth = swidth;
     this.sheight = sheight;
@@ -28,22 +37,35 @@ class TimelineScrollbar {
     sposMax = x + swidth-sliderwidth;
     spos = sposMin;
     newspos = spos;
+    playing = false;
+    sdf = new SimpleDateFormat("MM/dd HH:mm:ss.SSS");
 
     this.cellNumber = newTime.size();
-    
+
     cellWidth = ((sposMax+sliderwidth) - sposMin)/cellNumber;
+    
+    timex = timewidth + x;
+    textheight = y+sheight*4/5;
+    trig = new float[]{x+timewidth+buttonwidth*2/3,y+sheight/2,x+timewidth+buttonwidth/3,y+sheight/6,x+timewidth+buttonwidth/3,y+sheight*5/6};
+    pause = new float[] {x+timewidth+buttonwidth/3,y+sheight/7,buttonwidth/10,sheight*5/7,x+timewidth+buttonwidth*13/24,y+sheight/7,buttonwidth/10,sheight*5/7};
   }
-  
+
   private void updateIndex()
   {
     index = (int)((spos - sposMin)/cellWidth);
   }
-  
+
+  private void updatePos()
+  {
+    spos = sposMin + ((float)index)*cellWidth;
+    newspos = spos;
+  }
+
   public int getIndex()
   {
     return index;
   }
-  
+
   private int getCount(long a, long b, long interval)
   {
     long aRes = a%interval;
@@ -54,7 +76,19 @@ class TimelineScrollbar {
   }
 
   void update() {
-    if (overEvent()) {
+    if (playing && !locked)
+    {
+      index++;
+      if (index == newTime.size())
+        index = 0;
+      updatePos();
+    }
+    if (overEvent(timex, y, buttonwidth, sheight) && mousePressed && !locked)
+    {
+      playing = !playing;
+      mousePressed = false;
+    }
+     if (overEvent(sposMin, y, swidth, sheight)) {
       over = true;
     } 
     else {
@@ -67,21 +101,23 @@ class TimelineScrollbar {
       locked = false;
     }
     if (locked) {
-      newspos = constrain(mouseX-sheight/2, sposMin, sposMax);
+      newspos = constrain(mouseX, sposMin, sposMax);
     }
     if (abs(newspos - spos) > 1) {
-      spos = spos + newspos-spos;
+      spos = newspos;
+      updateIndex();
     }
-    updateIndex();
+
+ 
   }
 
   float constrain(float val, float minv, float maxv) {
     return min(max(val, minv), maxv);
   }
 
-  boolean overEvent() {
-    if (mouseX > x && mouseX < x+swidth &&
-      mouseY > y && mouseY < y+sheight) {
+  private boolean overEvent(float x, float y, float w, float h) {
+    if (mouseX > x && mouseX < x+w &&
+      mouseY > y && mouseY < y+h) {
       return true;
     } 
     else {
@@ -90,29 +126,48 @@ class TimelineScrollbar {
   }
 
   void display() {
+    pushMatrix();
+    //Draw bar background;
     noStroke();
-    fill(204);
-    rect(x,y,swidth,sheight);
+    fill(100);
+    rect(x, y, swidth, sheight);
+
+    //Draw time text
+    fill(200);
+    text(sdf.format(getCalendar(newTime.get(index)).getTime()), x, textheight);
+
+    //Draw button
     fill(150);
-    text(newTime.get(index),x,y+sheight*4/5);
+    rect(timex, y, buttonwidth, sheight, 3);
     fill(50);
-    rect(x+timewidth,y , buttonwidth, sheight);
+    if(!playing)
+      triangle(trig[0],trig[1],trig[2],trig[3],trig[4],trig[5]);
+    else
+    {
+      rect(pause[0],pause[1],pause[2],pause[3]);
+      rect(pause[4],pause[5],pause[6],pause[7]);
+    }
+
+    //Draw slider
     if (over || locked) {
-      fill(0, 0, 0);
+      fill(200, 0, 0);
     } 
     else {
-      fill(102, 102, 102);
+      fill(150, 0, 0);
     }
-    rect(spos, y, sliderwidth, sheight);
+    rect(spos, y, sliderwidth, sheight, 2);
+    popMatrix();
+  }
+
+  Calendar getCalendar(long millis)
+  {
+    Calendar c = Calendar.getInstance();
+    c.setTimeInMillis(millis);
+    return c;
   }
   
-Calendar getCalendar(long millis)
-{
-  Calendar c = Calendar.getInstance();
-  c.setTimeInMillis(millis);
-  return c;
-}
 
+  
   float getPos() {
     // Convert spos to be values between
     // 0 and the total width of the scrollbar
