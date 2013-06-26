@@ -11,31 +11,31 @@ abstract class VisualizationModule
   protected int y;//The y coordinat of the upper left corner of the module on the canvas.
   protected int mheight;//The height of the module on the canvas.
   protected int mwidth;//The width of the module on the canvas.
-  private long startingTime;//The starting time of the flight
-  private long interval;//The desired interval of the generated data.
-  protected ArrayList<ArrayList<Float>> generatedData;//Data generated from the original data set. It basically has more data points generated through mapping to make the data more continuous.
+  protected ArrayList<Float[]> originalData;
+  protected ArrayList<Float[]> generatedData;//Data generated from the original data set. It basically has more data points generated through mapping to make the data more continuous.
+  protected int dataSize;
   
   /*
    * Constructor. The first four parameters determine where to draw on the canvas.
    * The last two parameters should have the same length, e.g. originalData.get(i) should
    * be the data taken at dataTime.get(i).
    */
-  public VisualizationModule(int x, int y, int mwidth, int mheight,long interval,ArrayList<ArrayList<Float>> originalData, ArrayList<Calendar> dataTime)
+  public VisualizationModule(int x, int y, int mwidth, int mheight,ArrayList<Float[]> originalData)
   {
     this.x = x;
     this.y = y;
     this.mheight = mheight;
     this.mwidth = mwidth;
-    this.interval = interval;
-    startingTime = dataTime.get(0).getTimeInMillis();
-    generateData(originalData, dataTime, interval);
+    this.originalData = originalData;
+    this.generatedData = new ArrayList<Float[]>();
+    dataSize = originalData.get(0).length;
   }
   
   /*
    * Draw a specific data.
    * The data position is an index for generatedData.
    */
-  protected abstract void draw(ArrayList<Float> data);
+  protected abstract void draw(Float[] data);
   
   
   public void drawData(int i)
@@ -43,46 +43,32 @@ abstract class VisualizationModule
     draw(generatedData.get(i));
   }
   
-  /**
-    * Generate the data used in visualization based on the original data from the flight.
-    * This is necessary because the time interval at which data is taken during the flight is often too large.
-    * We need to fill in the gaps between two consecutive flight data with generated data so the visualization will have smooth animation.
-    */
-  private void generateData(ArrayList<ArrayList<Float>> originalData,ArrayList<Calendar> dataTime, long interval)
+  protected Float[] map(long startTime,long stopTime,long middleTime,Float[] start, Float[] stop)
   {
-    startingTime = dataTime.get(0).getTimeInMillis();
-    Calendar endingTime = dataTime.get(dataTime.size()-1);
-    generatedData = new ArrayList<ArrayList<Float>>();
-    for(int i = 0;i<originalData.size()-1;i++)
-    {
-      long startTime = dataTime.get(i).getTimeInMillis();
-      long stopTime = dataTime.get(i+1).getTimeInMillis();
-      long middle = (interval - startTime%interval)%interval + startTime;
-      while(middle < stopTime)
-      {
-        ArrayList<Float> generated = map(startTime,stopTime,originalData.get(i),originalData.get(i+1),middle);
-        generatedData.add(generated);
-        middle += interval;
-      }
-    }
-    
-    //Add the last data point in.
-    if(endingTime.getTimeInMillis()%interval == 0)
-      generatedData.add(originalData.get(originalData.size()-1));
-      
+    float ratio = ((float)(middleTime-startTime))/((float)(stopTime-startTime));
+    Float[] result = new Float[dataSize];
+   for(int i =0;i<dataSize;i++)
+      result[i] = (stop[i] - start[i])*ratio+start[i];
+   return result; 
   }
   
-  protected ArrayList<Float> map(long startTime, long stopTime, ArrayList<Float> start, ArrayList<Float> stop, long middle)
+  public void addMapped(long startTime,long stopTime, long middleTime, int dataIndex)
   {
-    float ratio = ((float)(middle-startTime))/((float)(stopTime-startTime));
-    ArrayList<Float> result = new ArrayList<Float>();
-    for(int i = 0;i<start.size();i++)
-      result.add((stop.get(i)-start.get(i))*ratio+start.get(i));
-    return result;
+    addGenerated(map(startTime,stopTime,middleTime,originalData.get(dataIndex),originalData.get(dataIndex+1)));
   }
   
-  private long diffInMillis(Calendar before, Calendar after)
+  public void addGenerated(Float[] generated)
   {
-    return after.getTimeInMillis() - before.getTimeInMillis();
+    generatedData.add(generated);
+  }
+  
+  public Float[] getOriginal(int dataIndex)
+  {
+    return originalData.get(dataIndex);
+  }
+  
+  public Float[] getGenerated(int dataIndex)
+  {
+    return generatedData.get(dataIndex);
   }
 }

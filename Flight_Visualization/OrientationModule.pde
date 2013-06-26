@@ -3,50 +3,57 @@ import processing.opengl.*;
 
 class OrientationModule extends VisualizationModule
 {
-  OrientationModule(int x, int y, int mwidth, int mheight,long interval,ArrayList<ArrayList<Float>> originalData, ArrayList<Calendar> dataTime)
+  
+  private int w;
+  private int h;
+  private int d;
+  public OrientationModule(int x, int y, int mwidth, int mheight, ArrayList<Float[]> originalData)
   {
-    super(x, y, mwidth, mheight,interval,originalData,dataTime);
+    super(x, y, mwidth, mheight, originalData);
+    w = mwidth/2;
+    h = w;
+    d = h;
   }
-  
-  int count = 0;
-  
-  void draw(ArrayList<Float> data)
+
+
+  void draw(Float[] data)
   {
     pushMatrix();
-    translate(x,y);
-    rotateX(radians(data.get(0)));
-    rotateZ(radians(data.get(1)));
-    rotateY(radians(data.get(2)));
+    translate(x, y);
+    rotateX(radians(data[0]));
+    rotateZ(radians(data[1]));
+    rotateY(radians(data[2]));
     strokeWeight(2);
     stroke(#B8B8B8);
     fill(#888888, 220);
-    box(200,200,400);
+    box(w, h, d);
     popMatrix();
   }
-  
-  protected ArrayList<Float> map(long startTime, long stopTime, ArrayList<Float> start, ArrayList<Float> stop, long middle)
+
+  protected Float[] map(long startTime, long stopTime, long middleTime, Float[] start, Float[] stop)
   {
-    float ratio = ((float)(middle-startTime))/((float)(stopTime-startTime));
-    ArrayList<Float> result = new ArrayList<Float>();
-    for(int i = 0;i<start.size();i++)
+    float ratio = ((float)(middleTime-startTime))/((float)(stopTime-startTime));
+    Float[] result = new Float[dataSize];
+    for (int i =0;i<dataSize;i++)
     {
-      float r = circleDistance(start.get(i),stop.get(i))*ratio+start.get(i);
-      if(r < 0)
+      float r = circleDistance(start[i], stop[i])*ratio+start[i];
+      if (r < 0)
         r += 360;
-      else if(r >=360)
+      else if (r >=360)
         r -= 360;
-      result.add(r);
+      result[i] = r;
     }
     return result;
   }
-  
+
   private float circleDistance(float start, float stop)
   {
     float diff = stop - start;
-    if(diff > 180)
+    if (diff > 180)
       diff -= 360;
     else if (diff < -180)
       diff += 360;
     return diff;
   }
 }
+

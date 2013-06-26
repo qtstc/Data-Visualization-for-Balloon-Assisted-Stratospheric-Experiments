@@ -1,25 +1,23 @@
 import java.util.Date;
 
 class TimelineScrollbar {
-  int swidth, sheight;    // width and height of bar
-  float x, y;       // x and y position of bar
-  float spos, newspos;    // x position of slider
-  float sposMin, sposMax; // max and min values of slider
-  boolean over;           // is the mouse over the slider?
-  boolean locked;
-  float ratio;
+  private int swidth, sheight;    // width and height of bar
+  private float x, y;       // x and y position of bar
+  private float spos, newspos;    // x position of slider
+  private float sposMin, sposMax; // max and min values of slider
+  private boolean over;           // is the mouse over the slider?
+  private boolean locked;
+  private float ratio;
 
-  int cellNumber; // The number of different positions in the scrollbar. Each cell/position correspond to one set of flight data.
-  float cellWidth;
-  int interval; // The time interval at which data was recorded. In millisecond.
-  int index;
-  Long startingTime;
+  private int cellNumber; // The number of different positions in the scrollbar. Each cell/position correspond to one set of flight data.
+  private float cellWidth;
+  private int index;
   
-  float timewidth = 100;
-  float buttonwidth = 50;
-  float sliderwidth = 10;
+  static final float timewidth = 100;
+  static final float buttonwidth = 50;
+  static final float sliderwidth = 10;
 
-  TimelineScrollbar (float x, float y, int swidth, int sheight, int interval, ArrayList<Calendar> dataTime) {
+  TimelineScrollbar (float x, float y, int swidth, int sheight, ArrayList<Long> newTime) {
     this.swidth = swidth;
     this.sheight = sheight;
     int widthtoheight = swidth - sheight;
@@ -31,17 +29,19 @@ class TimelineScrollbar {
     spos = sposMin;
     newspos = spos;
 
-    this.cellNumber = getCount(dataTime.get(0).getTimeInMillis(),dataTime.get(dataTime.size()-1).getTimeInMillis(),interval);
+    this.cellNumber = newTime.size();
     
     cellWidth = ((sposMax+sliderwidth) - sposMin)/cellNumber;
-    this.interval = interval;
-    long first = dataTime.get(0).getTimeInMillis();
-    startingTime = (interval - first%interval)%interval + first;
   }
   
   private void updateIndex()
   {
     index = (int)((spos - sposMin)/cellWidth);
+  }
+  
+  public int getIndex()
+  {
+    return index;
   }
   
   private int getCount(long a, long b, long interval)
@@ -94,7 +94,7 @@ class TimelineScrollbar {
     fill(204);
     rect(x,y,swidth,sheight);
     fill(150);
-    text(startingTime+index*interval ,x,y+sheight);
+    text(newTime.get(index),x,y+sheight*4/5);
     fill(50);
     rect(x+timewidth,y , buttonwidth, sheight);
     if (over || locked) {

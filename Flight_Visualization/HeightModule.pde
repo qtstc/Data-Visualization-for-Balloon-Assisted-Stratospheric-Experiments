@@ -2,12 +2,12 @@ import java.util.*;
 
 class HeightModule extends VisualizationModule
 {
-  HeightModule(int x, int y, int mwidth, int mheight,long interval,ArrayList<ArrayList<Float>> originalData, ArrayList<Calendar> dataTime)
+  HeightModule(int x, int y, int mwidth, int mheight, ArrayList<Float[]> originalData)
   {
-    super(x, y, mwidth, mheight,interval,originalData,dataTime);
+    super(x, y, mwidth, mheight, originalData);
   }
   
-  void draw(ArrayList<Float> data)
+  void draw(Float[] data)
   {
   }
 }
