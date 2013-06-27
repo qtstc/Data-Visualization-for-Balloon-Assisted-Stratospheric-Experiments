@@ -5,9 +5,15 @@ FlightData data;
 void setup()
 {
   ArrayList<Long> time =  new ArrayList<Long>();
-  ArrayList<Float> leds = new ArrayList<Float>();
+  ArrayList<ArrayList<Float>> leds = new ArrayList<ArrayList<Float>>();
   ArrayList<Float[]> orientation = new ArrayList<Float[]>();
   ArrayList<Float> altitude = new ArrayList<Float>(); 
+  for(int i = 0;i<8;i++)
+  {
+    ArrayList<Float> led = new ArrayList<Float>();
+    leds.add(led);
+  }
+  
   
   BufferedReader r = createReader("data.txt");
   try {
@@ -16,11 +22,8 @@ void setup()
     while (line != null)
     {
       StringTokenizer st = new StringTokenizer(line);
-      for(int i = 0;i<4;i++)
-        st.nextToken();
-      leds.add(Float.parseFloat(st.nextToken()));
-      for(int i = 0;i<3;i++)
-        st.nextToken();
+      for(int i = 0;i<8;i++)
+        leds.get(i).add(Float.parseFloat(st.nextToken()));
       orientation.add(readFloats(3, st));
       time.add(readTime(st.nextToken()));
       altitude.add(Float.parseFloat(st.nextToken()));
@@ -32,11 +35,11 @@ void setup()
   {
     e.printStackTrace();
   }
-  size(600, 600);
+  size(625, 615);
   data = new FlightData(10, 10, 500, 500, leds, time, orientation, altitude);
   background(255);
 
-  data.drawData(new float[]{0,0,0}, new float[]{180,180,180});
+  data.drawData(new float[]{0,0,0}, new float[]{180,180,180},0);
 }
 
 void loop()
