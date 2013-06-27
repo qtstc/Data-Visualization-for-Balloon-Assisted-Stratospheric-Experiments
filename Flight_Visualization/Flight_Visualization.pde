@@ -9,6 +9,7 @@ ArrayList<Long> newTime;
 ArrayList<Integer> newTimeMapDataTime;
 
 void setup() {
+  frameRate(15);
   size(800, 600, P3D);
   noStroke();
 
@@ -17,15 +18,17 @@ void setup() {
   newTime = new ArrayList<Long>();
   newTimeMapDataTime = new ArrayList<Integer>();
   ArrayList<Float[]> orientationData = new ArrayList<Float[]>();
+  ArrayList<Float[]> heightData = new ArrayList<Float[]>();
 
-  r = createReader("test.txt");
+  r = createReader("descend.txt");
   try {
     String line = r.readLine();
     while (line != null)
     {
       StringTokenizer st = new StringTokenizer(line);
-      dataTime.add(Long.parseLong(st.nextToken()));
       orientationData.add(readFloats(3, st));
+      dataTime.add(readTime(st.nextToken()));
+      heightData.add(readFloats(1,st));
       line = r.readLine();
     }
   }
@@ -35,6 +38,7 @@ void setup() {
   }
 
   modules.add(new OrientationModule(400, 280, 600, 400, orientationData));
+  modules.add(new HeightModule(0,0,20,height-16,heightData));
 
   generateData(100);
   hs1 = new TimelineScrollbar(0, height-16, width, 16,newTime);
@@ -87,5 +91,22 @@ void draw() {
   hs1.update();
   hs1.display();
   stroke(0);
+}
+
+Long readTime(String text)
+{
+    int dash = text.indexOf("-");
+    int underscore = text.indexOf("_");
+    int dot = text.indexOf(".");
+    int month = Integer.parseInt(text.substring(0,dash));
+    int date = Integer.parseInt(text.substring(dash+1,underscore));
+    StringTokenizer st = new StringTokenizer(text.substring(underscore+1,dot));
+    int hour = Integer.parseInt(st.nextToken(":"));
+    int minute = Integer.parseInt(st.nextToken(":"));
+    int second = Integer.parseInt(st.nextToken(":"));
+    long millisecond = Integer.parseInt(text.substring(dot+1))*10;
+    Calendar c = Calendar.getInstance();
+    c.set(2013, month, date, hour, minute, second);
+    return c.getTimeInMillis()+millisecond;
 }
 

@@ -31,6 +31,8 @@ abstract class VisualizationModule
     dataSize = originalData.get(0).length;
   }
   
+  
+  
   /*
    * Draw a specific data.
    * The data position is an index for generatedData.
