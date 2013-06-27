@@ -16,19 +16,21 @@ class FlightData
   
   int xAxisTextWidth;
   int yAxisTextHeight;
+  color[] colors;
   
-  FlightData(int x, int y, int w, int h,ArrayList<ArrayList<Float>> ledReadings, ArrayList<Long> time, ArrayList<Float[]> orientationReadings, ArrayList<Float> altitudeReading)
+  FlightData(int x, int y, int w, int h,ArrayList<ArrayList<Float>> ledReadings, ArrayList<Long> time, ArrayList<Float[]> orientationReadings, ArrayList<Float> altitudeReading,color[] colors)
   {
     xAxisTextWidth = 30;
     yAxisTextHeight = 15;
     this.x = x+xAxisTextWidth;
     this.y = y;
     this.w = w-xAxisTextWidth;
-    this.h = h-yAxisTextHeight;
+    this.h = h-2*yAxisTextHeight;
     this.time = time;
     this.ledReadings = ledReadings;
     this.orientationReadings = orientationReadings;
     this.altitudeReading = altitudeReading;
+    this.colors = colors;
     sdf = new SimpleDateFormat("HH:mm:ss");
   }
   
@@ -69,15 +71,18 @@ class FlightData
       diff = diff * -1;
     }
     
+    pushStyle();
+    stroke(colors[led]);
     strokeWeight(1);
-    for(int i = 0;i<ledReadings.size();i++)
+    for(int i = 0;i<ledReadings.get(led).size();i++)
     {
       if(!withInRange(targetOrientation,error,orientationReadings.get(i)))
         continue;
       float xDraw = x+((float)(time.get(i)-startTime)*w/(float)range);
       float yDraw = y+h-ledReadings.get(led).get(i)*h/1024; 
-      ellipse(xDraw,yDraw,2,2);
+      ellipse(xDraw,yDraw,1,1);
     }
+    popStyle();
   }
   
   boolean withInRange(float[] target, float[] error, Float[] actual)
