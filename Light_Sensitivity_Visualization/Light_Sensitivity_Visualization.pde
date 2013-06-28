@@ -4,10 +4,24 @@ FlightData data;
 SelectBox[] boxes;
 boolean needDraw;
 int selected;
+SelectBox modeBox;
+boolean timeMode;
+float[] target;
+float[] window;
+Slider[] sliders;
+SelectBox applyBox;
+
 
 void setup()
 {
+  target = new float[] {
+    0, 0, 0
+  };
+  window = new float[] {
+    0, 0, 0
+  };
   needDraw = true;
+  timeMode = true;
   selected = 0;
   ArrayList<Long> time =  new ArrayList<Long>();
   ArrayList<ArrayList<Float>> leds = new ArrayList<ArrayList<Float>>();
@@ -19,13 +33,45 @@ void setup()
     leds.add(led);
   }
 
+  String[] sliderLabels = new String[] {
+    "pitch", "roll", "heading"
+  };
+
+  //Setup sliders
+  sliders = new Slider[6];
+  int sliderX = 625;
+  int sliderY = 80;
+  int sliderW = 80;
+  int sliderH = 20;
+  int sliderSpace = 8;
+  for (int i = 0;i<3;i++)
+  {
+    fill(255);
+    stroke(255);
+    text(sliderLabels[i], sliderX - 10, sliderY);
+    sliders[i] = new Slider(sliderX, sliderY, sliderW, sliderH, 360);
+    sliderY += sliderH+sliderSpace;
+  }
+  sliderY = 80;
+  sliderX += sliderW + sliderSpace;
+  for (int i = 3;i<6;i++)
+  {
+    sliders[i] = new Slider(sliderX, sliderY, sliderW, sliderH, 180);
+    sliderY += sliderH+sliderSpace;
+  }
+
+  //Setup boxes.
+  modeBox = new SelectBox(650, 20, 110, 20, color(255, 150, 0), "Change Mode");
+  modeBox.showText = true;
+  applyBox = new SelectBox(670, 50, 60, 20, color(255, 150, 0), "Apply");
+  applyBox.showText = true;
   boxes = new SelectBox[8];
   int boxX = 675;
-  int boxY = 20;
+  int boxY = 175;
   int boxW = 50;
   int boxH = 50;
   color[] colors = new color[] {
-    color(0, 0, 0, 255), color(0, 0, 0, 155), color(255, 0, 0), color(255, 255, 0), color(0, 255, 0), color(0, 0, 255), color(255, 0, 255), color(0, 0, 0, 55)
+    color(0, 0, 0, 255), color(155, 155, 155, 255), color(255, 0, 0, 255), color(255, 255, 0, 255), color(0, 255, 0, 255), color(0, 0, 255, 255), color(255, 0, 255, 255), color(55, 55, 55, 255)
   };
   boxes[0] = new SelectBox(boxX, boxY, boxW, boxH, colors[0], "IR 940");
   boxY += boxH;
@@ -42,6 +88,8 @@ void setup()
   boxes[6] = new SelectBox(boxX, boxY, boxW, boxH, colors[6], "Violet 400");
   boxY += boxH;
   boxes[7] = new SelectBox(boxX, boxY, boxW, boxH, colors[7], "UV 351");
+
+
 
   BufferedReader r = createReader("data.txt");
   try {
@@ -63,15 +111,30 @@ void setup()
   {
     e.printStackTrace();
   }
-  size(800, 600);
+  size(800, 600, P3D);
   data = new FlightData(20, 20, 530, 530, leds, time, orientation, altitude, colors);
 }
 
-void loop()
+void draw()
 {
+  boolean redrawOrientation = false;
+  for (int i = 0;i<sliders.length;i++)
+  {
+    if (sliders[i].update())
+    {
+      redrawOrientation = true;
+    }
+    sliders[i].display();
+  }
+  if (redrawOrientation)
+  {
+    fill(255);
+    stroke(255);
+    rect(550, 60, 70, 90);
+  }
+  drawOrientation();
   if (mousePressed)
   {
-    println("Pressed");
     for (int i = 0;i<boxes.length;i++)
     {
       if (boxes[i].isOver())
@@ -81,21 +144,37 @@ void loop()
         break;
       }
     }
+     if (applyBox.isOver())
+    {
+      target[0] = sliders[0].index;
+      target[1] = sliders[1].index;
+      target[2] = sliders[2].index;
+      window[0] = sliders[3].index;
+      window[1] = sliders[4].index;
+      window[2] = sliders[5].index;
+      needDraw = true;
+    }
+    if (modeBox.isOver())
+    {
+      timeMode = !timeMode;
+      mousePressed = false;
+      needDraw = true;
+    }
+    
   }
   if (!needDraw)
     return;
   background(255);
-  data.drawData(new float[] {
-    0, 0, 0
-  }
-  , new float[] {
-    180, 180, 180
-  }
-  , selected);
+  if (timeMode)
+    data.drawDataByTime(target, window, selected);
+  else
+    data.drawDataByHeight(target, window, selected);
   needDraw = false;
 
   for (int i = 0;i<boxes.length;i++)
     boxes[i].drawBox();
+  modeBox.drawBox();
+  applyBox.drawBox();
 }
 
 
@@ -122,5 +201,26 @@ public static Float[] readFloats(int count, StringTokenizer st)
   for (int i = 0;i<count;i++)
     result[i] = Float.parseFloat(st.nextToken());
   return result;
+}
+
+void drawOrientation()
+{
+  int w = 20;
+  int h = 20;
+  int d = 20;
+  pushMatrix();
+  translate(600, 110);
+  //data = new Float[]{0.0,0.0,0.0};
+  rotateX(radians(sliders[0].index));
+  rotateZ(radians(sliders[1].index));
+  rotateY(radians(sliders[2].index));
+  strokeWeight(1);
+  stroke(#B8B8B8);
+  fill(#888888, 220);
+  box(w, h, d);
+  translate(0, 0, d/2);
+  fill(#CCCC00, 200);
+  box(13, 13, 1);
+  popMatrix();
 }
 

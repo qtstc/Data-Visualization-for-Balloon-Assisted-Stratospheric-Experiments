@@ -6,6 +6,8 @@ class SelectBox
   int h;
   color c;
   String t;
+  boolean showText;
+  
   SelectBox(int x, int y, int w, int h,color c,String t)
   {
     this.x = x;
@@ -14,6 +16,7 @@ class SelectBox
     this.h = h;
     this.c = c;
     this.t = t;
+    showText = false;
   }
   
   boolean isOver()
@@ -29,7 +32,9 @@ class SelectBox
     stroke(255);
     fill(c);
     rect(x,y,w,h);
-    //text(s,x,y+h);
+    fill(255);
+    if(showText)
+      text(t,x+w/6,y+(float)h/1.5);
     popMatrix();
   }
 }
