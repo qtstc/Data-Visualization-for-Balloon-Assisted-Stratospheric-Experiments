@@ -16,7 +16,7 @@ class SelectBox
     this.h = h;
     this.c = c;
     this.t = t;
-    showText = false;
+    showText = true;
   }
   
   boolean isOver()

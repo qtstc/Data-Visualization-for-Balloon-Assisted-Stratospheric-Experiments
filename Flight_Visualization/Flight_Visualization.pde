@@ -20,7 +20,7 @@ void setup() {
   ArrayList<Float[]> orientationData = new ArrayList<Float[]>();
   ArrayList<Float[]> heightData = new ArrayList<Float[]>();
 
-  r = createReader("descend.txt");
+  r = createReader("complete.txt");
   try {
     String line = r.readLine();
     while (line != null)

@@ -73,7 +73,9 @@ class FlightData
     }
     
     pushStyle();
+    ellipseMode(CENTER);
     stroke(colors[led]);
+    fill(colors[led]);
     strokeWeight(1);
     for(int i = 0;i<ledReadings.get(led).size();i++)
     {
@@ -81,7 +83,7 @@ class FlightData
         continue;
       float xDraw = x+((float)(time.get(i)-startTime)*w/(float)range);
       float yDraw = y+h-ledReadings.get(led).get(i)*h/1024; 
-      ellipse(xDraw,yDraw,1,1);
+      ellipse(xDraw,yDraw,3,3);
     }
     popStyle();
   }
@@ -125,6 +127,7 @@ class FlightData
     }
     
     pushStyle();
+    ellipseMode(CENTER);
     stroke(colors[led]);
     fill(colors[led]);
     strokeWeight(1);
@@ -135,7 +138,7 @@ class FlightData
        //float xDraw = (float)x+(recurHeight*(float)w/range);
       float xDraw = (float)x+(altitudeReadings.get(i)-startHeight)*(float)w/range;
       float yDraw = y+h-ledReadings.get(led).get(i)*h/1024; 
-      ellipse(xDraw,yDraw,2,2);
+      ellipse(xDraw,yDraw,3,3);
     }
     popStyle();
   }

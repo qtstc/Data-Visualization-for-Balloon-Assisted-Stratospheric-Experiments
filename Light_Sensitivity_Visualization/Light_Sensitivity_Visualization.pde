@@ -11,6 +11,10 @@ float[] window;
 Slider[] sliders;
 SelectBox applyBox;
 
+color[] colors = new color[] {
+  color(0, 0, 0, 255), color(155, 155, 155, 255), color(255, 0, 0, 255), color(255, 255, 0, 255), color(0, 255, 0, 255), color(0, 0, 255, 255), color(255, 0, 255, 255), color(55, 55, 55, 255)
+};
+
 
 void setup()
 {
@@ -33,61 +37,11 @@ void setup()
     leds.add(led);
   }
 
-  String[] sliderLabels = new String[] {
-    "pitch", "roll", "heading"
-  };
-
-  //Setup sliders
-  sliders = new Slider[6];
-  int sliderX = 625;
-  int sliderY = 80;
-  int sliderW = 80;
-  int sliderH = 20;
-  int sliderSpace = 8;
-  for (int i = 0;i<3;i++)
-  {
-    fill(255);
-    stroke(255);
-    text(sliderLabels[i], sliderX - 10, sliderY);
-    sliders[i] = new Slider(sliderX, sliderY, sliderW, sliderH, 360);
-    sliderY += sliderH+sliderSpace;
-  }
-  sliderY = 80;
-  sliderX += sliderW + sliderSpace;
-  for (int i = 3;i<6;i++)
-  {
-    sliders[i] = new Slider(sliderX, sliderY, sliderW, sliderH, 180);
-    sliderY += sliderH+sliderSpace;
-  }
-
+  setUpSliders();
+  setUpSelectBoxes();
   //Setup boxes.
   modeBox = new SelectBox(650, 20, 110, 20, color(255, 150, 0), "Change Mode");
   modeBox.showText = true;
-  applyBox = new SelectBox(670, 50, 60, 20, color(255, 150, 0), "Apply");
-  applyBox.showText = true;
-  boxes = new SelectBox[8];
-  int boxX = 675;
-  int boxY = 175;
-  int boxW = 50;
-  int boxH = 50;
-  color[] colors = new color[] {
-    color(0, 0, 0, 255), color(155, 155, 155, 255), color(255, 0, 0, 255), color(255, 255, 0, 255), color(0, 255, 0, 255), color(0, 0, 255, 255), color(255, 0, 255, 255), color(55, 55, 55, 255)
-  };
-  boxes[0] = new SelectBox(boxX, boxY, boxW, boxH, colors[0], "IR 940");
-  boxY += boxH;
-  boxes[1] = new SelectBox(boxX, boxY, boxW, boxH, colors[1], "IR 830");
-  boxY += boxH;
-  boxes[2] = new SelectBox(boxX, boxY, boxW, boxH, colors[2], "Red");
-  boxY += boxH;
-  boxes[3] = new SelectBox(boxX, boxY, boxW, boxH, colors[3], "Yellow");
-  boxY += boxH;
-  boxes[4] = new SelectBox(boxX, boxY, boxW, boxH, colors[4], "Green");
-  boxY += boxH;
-  boxes[5] = new SelectBox(boxX, boxY, boxW, boxH, colors[5], "Blue");
-  boxY += boxH;  
-  boxes[6] = new SelectBox(boxX, boxY, boxW, boxH, colors[6], "Violet 400");
-  boxY += boxH;
-  boxes[7] = new SelectBox(boxX, boxY, boxW, boxH, colors[7], "UV 351");
 
 
 
@@ -111,8 +65,59 @@ void setup()
   {
     e.printStackTrace();
   }
-  size(800, 600, P3D);
+  size(800, 650, P3D);
   data = new FlightData(20, 20, 530, 530, leds, time, orientation, altitude, colors);
+}
+
+void setUpSliders()
+{
+  String[] sliderLabels = new String[] {
+    "pitch", "roll", "yaw", "pitch range", "roll range", "yaw range"
+  };
+
+  //Setup sliders
+  sliders = new Slider[6];
+  int sliderX = 600;
+  int sliderY = 280;
+  int sliderW = 180;
+  int sliderH = 20;
+  int sliderSpace = 20;
+  for (int i = 0;i<3;i++)
+  {
+    sliders[i] = new Slider(sliderX, sliderY, sliderW, sliderH, 360, sliderLabels[i]);
+    sliderY += sliderH+sliderSpace;
+  }
+  for (int i = 3;i<6;i++)
+  {
+    sliders[i] = new Slider(sliderX, sliderY, sliderW, sliderH, 180, sliderLabels[i]);
+    sliderY += sliderH+sliderSpace;
+  }
+  applyBox = new SelectBox(660, 510, 60, 20, color(255, 150, 0), "Apply");
+  applyBox.showText = true;
+}
+
+void setUpSelectBoxes()
+{
+  boxes = new SelectBox[8];
+  int boxX = 120;
+  int boxY = 580;
+  int boxW = 50;
+  int boxH = 50;
+  boxes[0] = new SelectBox(boxX, boxY, boxW, boxH, colors[0], "IR940");
+  boxX += boxW;
+  boxes[1] = new SelectBox(boxX, boxY, boxW, boxH, colors[1], "IR830");
+  boxX += boxW;
+  boxes[2] = new SelectBox(boxX, boxY, boxW, boxH, colors[2], " Red");
+  boxX += boxW;
+  boxes[3] = new SelectBox(boxX, boxY, boxW, boxH, colors[3], "Yellow");
+  boxX += boxW;
+  boxes[4] = new SelectBox(boxX, boxY, boxW, boxH, colors[4], "Green");
+  boxX += boxW;
+  boxes[5] = new SelectBox(boxX, boxY, boxW, boxH, colors[5], " Blue");
+  boxX += boxW;
+  boxes[6] = new SelectBox(boxX, boxY, boxW, boxH, colors[6], "V400");
+  boxX += boxW;
+  boxes[7] = new SelectBox(boxX, boxY, boxW, boxH, colors[7], "UV351");
 }
 
 void draw()
@@ -130,7 +135,7 @@ void draw()
   {
     fill(255);
     stroke(255);
-    rect(550, 60, 70, 90);
+    rect(600, 100, 180, 400);
   }
   drawOrientation();
   if (mousePressed)
@@ -144,7 +149,7 @@ void draw()
         break;
       }
     }
-     if (applyBox.isOver())
+    if (applyBox.isOver())
     {
       target[0] = sliders[0].index;
       target[1] = sliders[1].index;
@@ -160,7 +165,6 @@ void draw()
       mousePressed = false;
       needDraw = true;
     }
-    
   }
   if (!needDraw)
     return;
@@ -205,12 +209,11 @@ public static Float[] readFloats(int count, StringTokenizer st)
 
 void drawOrientation()
 {
-  int w = 20;
-  int h = 20;
-  int d = 20;
+  int w = 80;
+  int h = 80;
+  int d = 80;
   pushMatrix();
-  translate(600, 110);
-  //data = new Float[]{0.0,0.0,0.0};
+  translate(690, 180, 0);
   rotateX(radians(sliders[0].index));
   rotateZ(radians(sliders[1].index));
   rotateY(radians(sliders[2].index));
@@ -220,7 +223,7 @@ void drawOrientation()
   box(w, h, d);
   translate(0, 0, d/2);
   fill(#CCCC00, 200);
-  box(13, 13, 1);
+  box(w/2, h/2, 1);
   popMatrix();
 }
 

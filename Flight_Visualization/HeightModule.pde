@@ -23,20 +23,23 @@ class HeightModule extends VisualizationModule
   
   void draw(Float[] data)
   {
-    stroke(0);
-    line(x,y,x,endPointY);
-    int lengthIncm = (int)(data[0] * 10000);
-    int startingPoint = lengthIncm - scale;
-    int diff = startingPoint % interval;
-    if(diff != 0)
-      diff = interval - diff;
-    float base = endPointY - diff*drawRatio;
-    while(base >= y)
-    {
-      line(x,base,markingEndX,base);
-      text(((float)startingPoint)/10000+"m",markingEndX,base);
-      startingPoint += interval;
-      base -= drawInterval;
-    }
+    stroke(2);
+    fill(0);
+    text(data[0]+" m",x+10,y+mheight-10);
+//    stroke(0);
+//    line(x,y,x,endPointY);
+//    int lengthIncm = (int)(data[0] * 10000);
+//    int startingPoint = lengthIncm - scale;
+//    int diff = startingPoint % interval;
+//    if(diff != 0)
+//      diff = interval - diff;
+//    float base = endPointY - diff*drawRatio;
+//    while(base >= y)
+//    {
+//      line(x,base,markingEndX,base);
+//      text(((float)startingPoint)/10000+"m",markingEndX,base);
+//      startingPoint += interval;
+//      base -= drawInterval;
+//  }
   }
 }

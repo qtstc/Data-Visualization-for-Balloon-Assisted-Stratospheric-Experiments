@@ -6,14 +6,15 @@ class Slider
   private float sposMin, sposMax; // max and min values of slider
   private boolean over;           // is the mouse over the slider?
   private boolean locked;
-  
+
   private int sliderwidth = 10;
-  
+
   private int cellNumber; // The number of different positions in the scrollbar. Each cell/position correspond to one set of flight data.
   private float cellWidth;
   private int index;
-  
-  Slider (float x, float y, int swidth, int sheight,int cellNum)
+  private String label;
+
+  Slider (float x, float y, int swidth, int sheight, int cellNum, String label)
   {
     this.x = x;
     this.y = y;
@@ -24,16 +25,19 @@ class Slider
     newspos = spos;
     sposMin = x;
     sposMax = x + swidth-sliderwidth;
-    
-    cellWidth = ((sposMax+sliderwidth) - sposMin)/cellNumber;
+
+    cellWidth = ((sposMax) - sposMin)/(float)cellNumber;
     index = 0;
+    this.label = label;
   }
-  
+
   boolean update() {
     if (overEvent()) {
       over = true;
-    } else {
+    } 
+    else {
       over = false;
+      locked = false;
     }
     if (mousePressed && over) {
       locked = true;
@@ -51,22 +55,23 @@ class Slider
     }
     return false;
   }
-  
-boolean overEvent() {
+
+  boolean overEvent() {
     if (mouseX > x && mouseX < x+swidth &&
-       mouseY > y && mouseY < y+sheight) {
+      mouseY > y && mouseY < y+sheight) {
       return true;
-    } else {
+    } 
+    else {
       return false;
     }
   }
-  
-    void display() {
-     pushMatrix();
+
+  void display() {
+    pushStyle();
     //Draw bar background;
     noStroke();
     fill(100);
-    rect(x, y, swidth, sheight);
+    rect(x, y+sheight/2, swidth, sheight/2,4);
     //Draw slider
     if (over || locked) {
       fill(200, 0, 0);
@@ -74,8 +79,9 @@ boolean overEvent() {
     else {
       fill(150, 0, 0);
     }
-    rect(spos, y, sliderwidth, sheight, 2);
-    popMatrix();
+    rect(spos, y,sliderwidth,sheight, 4);
+    text(label+": "+index, x, y-sheight/3);
+    popStyle();
   }
-
 }
+
