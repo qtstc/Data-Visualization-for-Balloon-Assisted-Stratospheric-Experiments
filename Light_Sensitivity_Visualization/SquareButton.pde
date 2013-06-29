@@ -1,4 +1,4 @@
-class SelectBox
+class SquareButton
 {
   int x;
   int y;
@@ -8,7 +8,7 @@ class SelectBox
   String t;
   boolean showText;
   
-  SelectBox(int x, int y, int w, int h,color c,String t)
+  SquareButton(int x, int y, int w, int h,color c,String t)
   {
     this.x = x;
     this.y = y;

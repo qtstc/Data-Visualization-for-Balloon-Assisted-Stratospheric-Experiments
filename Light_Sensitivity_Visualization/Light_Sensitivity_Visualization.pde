@@ -1,16 +1,42 @@
 import java.util.*;
 
-FlightData data;
-SelectBox[] boxes;
-boolean needDraw;
-int selected;
-SelectBox modeBox;
-boolean timeMode;
-float[] target;
-float[] window;
-Slider[] sliders;
-SelectBox applyBox;
+/** This is a data visualization project for DePauw University's
+  * BASE (Balloon Assisted Stratospheric Research) 2013.
+  *
+  * It plots the voltage output against time(or altitude) 
+  * graph for eight different LEDs which are used as photometers.
+  * A filtering mechanism is included to allow user to only look 
+  * at LED readings that were taken when the LED is facing a 
+  * specific direction.
+  *
+  * Author: Tao Qian (taoqian_2015@depauw.edu)
+  */ 
 
+
+FlightData data;//Contains all the data.
+boolean needDraw;//Flag used to indicate that the graph needs to be redrawn.
+
+SquareButton[] LEDButtons;//Buttons for selecting different LEDs.
+int selectedLED;//The LED that is selected (0-7). It's data should be drawn.
+
+SquareButton changeModeButton;//Button for user to change between time/altitude mode.
+boolean timeMode;//Flag used to indicate the current mode.
+
+//Describe the targeted direction. Contains three element ranging from 0 to 360 
+//representing pitch, roll and yaw.
+float[] target;
+//Describe the window of the LEDs we are looking at. (0 - 180). Contains 3 elements.
+//e.g. if window[0] = 45, target[0] = 0, the LEDs we are looking at have its
+//pitch between -45 degrees and +45 degrees.
+float[] window;
+//Sliders for changing the target and window. 
+//First three are for target, second three are for window.
+Slider[] sliders;
+
+//Button used for applying the target and window settings.
+SquareButton applyButton;
+
+//The color used to represent different LEDs.
 color[] colors = new color[] {
   color(0, 0, 0, 255), color(155, 155, 155, 255), color(255, 0, 0, 255), color(255, 255, 0, 255), color(0, 255, 0, 255), color(0, 0, 255, 255), color(255, 0, 255, 255), color(55, 55, 55, 255)
 };
@@ -26,25 +52,27 @@ void setup()
   };
   needDraw = true;
   timeMode = true;
-  selected = 0;
+  selectedLED = 0;
+  //Data to be passed to flight data.
   ArrayList<Long> time =  new ArrayList<Long>();
   ArrayList<ArrayList<Float>> leds = new ArrayList<ArrayList<Float>>();
   ArrayList<Float[]> orientation = new ArrayList<Float[]>();
   ArrayList<Float> altitude = new ArrayList<Float>();
-  for (int i = 0;i<8;i++)
+  for (int i = 0;i<8;i++)//Intialize the arrays of LED readings.
   {
     ArrayList<Float> led = new ArrayList<Float>();
     leds.add(led);
   }
 
-  setUpSliders();
-  setUpSelectBoxes();
-  //Setup boxes.
-  modeBox = new SelectBox(650, 20, 110, 20, color(255, 150, 0), "Change Mode");
-  modeBox.showText = true;
-
-
-
+  /* Read data from file.
+   * The data should be in a format that match the following criteria.
+   * - Start with a column name line.
+   * - The rest of the line contains numbers in int or float.
+   * - Each line contains 13 numbers, with the first 8 being the readings
+   *   from the 8 LEDs, the next 3 being the orientation in degrees in 
+   *   pitch, roll and heading and the last two being the time and altitude in meters.
+   * - Values in the same line are sepreated by a single space.
+   */
   BufferedReader r = createReader("data.txt");
   try {
     r.readLine();//Get rid of column names.
@@ -67,10 +95,18 @@ void setup()
   }
   size(800, 650, P3D);
   data = new FlightData(20, 20, 530, 530, leds, time, orientation, altitude, colors);
+  
+  //Set up UI.
+  setUpSliders();
+  setUpLEDButtons();
+  //Setup Change Mode Button
+  changeModeButton = new SquareButton(650, 20, 110, 20, color(255, 150, 0), "Change Mode");
+
 }
 
 void setUpSliders()
 {
+  //Names of the sliders used.
   String[] sliderLabels = new String[] {
     "pitch", "roll", "yaw", "pitch range", "roll range", "yaw range"
   };
@@ -82,6 +118,7 @@ void setUpSliders()
   int sliderW = 180;
   int sliderH = 20;
   int sliderSpace = 20;
+  //Initialize them at different time because the ranges are different.
   for (int i = 0;i<3;i++)
   {
     sliders[i] = new Slider(sliderX, sliderY, sliderW, sliderH, 360, sliderLabels[i]);
@@ -92,36 +129,30 @@ void setUpSliders()
     sliders[i] = new Slider(sliderX, sliderY, sliderW, sliderH, 180, sliderLabels[i]);
     sliderY += sliderH+sliderSpace;
   }
-  applyBox = new SelectBox(660, 510, 60, 20, color(255, 150, 0), "Apply");
-  applyBox.showText = true;
+  
+  //Initialize the apply button.
+  applyButton = new SquareButton(660, 510, 60, 20, color(255, 150, 0), "Apply");
+  applyButton.showText = true;
 }
 
-void setUpSelectBoxes()
+void setUpLEDButtons()
 {
-  boxes = new SelectBox[8];
+  String[] buttonNames = new String[]{"IR940","IR830","Red","Yellow","Green","Blue","V400","UV351"};
+  LEDButtons = new SquareButton[8];
   int boxX = 120;
   int boxY = 580;
   int boxW = 50;
   int boxH = 50;
-  boxes[0] = new SelectBox(boxX, boxY, boxW, boxH, colors[0], "IR940");
-  boxX += boxW;
-  boxes[1] = new SelectBox(boxX, boxY, boxW, boxH, colors[1], "IR830");
-  boxX += boxW;
-  boxes[2] = new SelectBox(boxX, boxY, boxW, boxH, colors[2], " Red");
-  boxX += boxW;
-  boxes[3] = new SelectBox(boxX, boxY, boxW, boxH, colors[3], "Yellow");
-  boxX += boxW;
-  boxes[4] = new SelectBox(boxX, boxY, boxW, boxH, colors[4], "Green");
-  boxX += boxW;
-  boxes[5] = new SelectBox(boxX, boxY, boxW, boxH, colors[5], " Blue");
-  boxX += boxW;
-  boxes[6] = new SelectBox(boxX, boxY, boxW, boxH, colors[6], "V400");
-  boxX += boxW;
-  boxes[7] = new SelectBox(boxX, boxY, boxW, boxH, colors[7], "UV351");
+  for(int i = 0;i<LEDButtons.length;i++)
+  {
+    LEDButtons[i] = new SquareButton(boxX, boxY, boxW, boxH, colors[i], buttonNames[i]);
+    boxX += boxW;
+  }
 }
 
 void draw()
 {
+  //First check whether the orientation sliders are changed and update the sliders.
   boolean redrawOrientation = false;
   for (int i = 0;i<sliders.length;i++)
   {
@@ -131,25 +162,31 @@ void draw()
     }
     sliders[i].display();
   }
+  
+  //If changed, draw a rectange to cover the old one.
   if (redrawOrientation)
   {
     fill(255);
     stroke(255);
     rect(600, 100, 180, 400);
   }
-  drawOrientation();
-  if (mousePressed)
+  drawOrientation();//Then draw again.
+  
+  
+  if (!mousePressed) 
   {
-    for (int i = 0;i<boxes.length;i++)
+    //First check whether it is one of the LED buttons.
+    for (int i = 0;i<LEDButtons.length;i++)
     {
-      if (boxes[i].isOver())
+      if (LEDButtons[i].isOver())
       {
-        selected = i;
+        selectedLED = i;
         needDraw = true;
         break;
       }
     }
-    if (applyBox.isOver())
+    //If apply button is pressed, collect the UI data and redraw.
+    if (applyButton.isOver())
     {
       target[0] = sliders[0].index;
       target[1] = sliders[1].index;
@@ -159,29 +196,33 @@ void draw()
       window[2] = sliders[5].index;
       needDraw = true;
     }
-    if (modeBox.isOver())
+    
+    //If change mode button is pressed, change the mode.
+    if (changeModeButton.isOver())
     {
       timeMode = !timeMode;
       mousePressed = false;
       needDraw = true;
     }
   }
+  
   if (!needDraw)
     return;
   background(255);
   if (timeMode)
-    data.drawDataByTime(target, window, selected);
+    data.drawDataByTime(target, window, selectedLED);
   else
-    data.drawDataByHeight(target, window, selected);
+    data.drawDataByHeight(target, window, selectedLED);
   needDraw = false;
 
-  for (int i = 0;i<boxes.length;i++)
-    boxes[i].drawBox();
-  modeBox.drawBox();
-  applyBox.drawBox();
+  //Draw the buttons.
+  for (int i = 0;i<LEDButtons.length;i++)
+    LEDButtons[i].drawButton();
+  changeModeButton.drawButton();
+  applyButton.drawButton();
 }
 
-
+//Method used to read time string in the format of "6-26_15:49:9.0".
 Long readTime(String text)
 {
   int dash = text.indexOf("-");

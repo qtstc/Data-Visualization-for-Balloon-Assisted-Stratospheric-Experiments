@@ -1,6 +1,7 @@
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+/** Class used for storing flight data.*/
 class FlightData
 {
   ArrayList<ArrayList<Float>> ledReadings;
@@ -9,11 +10,12 @@ class FlightData
   ArrayList<Long> time;
   SimpleDateFormat sdf;
   
-  int x;
-  int y;
-  int w;
-  int h;
+  int x;//The x coordinate of the upper left corner.
+  int y;//The y coordinate of the upper left corner.
+  int w;//Width of the canvas.
+  int h;//Height of the canvas.
   
+  //The width and height of text in the graph.
   int xAxisTextWidth;
   int yAxisTextHeight;
   color[] colors;
@@ -58,6 +60,7 @@ class FlightData
     Long range = endTime - startTime;
     float interval = (float)range/(float)10;
     
+    //Used for drawing the y axis labels at different heights.
     int unevenYAxisTextHeight = yAxisTextHeight;
     int diff = yAxisTextHeight;
     
@@ -72,6 +75,7 @@ class FlightData
       diff = diff * -1;
     }
     
+    //Draw the data.
     pushStyle();
     ellipseMode(CENTER);
     stroke(colors[led]);
@@ -144,6 +148,7 @@ class FlightData
   }
   
   
+  //Calculates whether a pitch, roll and yaw dataset is with in the range of the given ones.
   boolean withInRange(float[] target, float[] error, Float[] actual)
   {
     for(int i = 0;i<target.length;i++)
@@ -155,6 +160,7 @@ class FlightData
     return true; 
   }
   
+  //Returns the shortest distance between two degrees.
   float circleDistance(float start, float stop)
   {
     float diff = stop - start;
