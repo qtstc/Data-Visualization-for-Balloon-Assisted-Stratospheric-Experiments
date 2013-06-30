@@ -26,7 +26,7 @@ class SquareButton
     return false;
   }
   
-  void drawBox()
+  void drawButton()
   {
     pushMatrix();
     stroke(255);

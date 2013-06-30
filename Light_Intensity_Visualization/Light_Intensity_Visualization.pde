@@ -173,7 +173,7 @@ void draw()
   drawOrientation();//Then draw again.
   
   
-  if (!mousePressed) 
+  if (mousePressed) 
   {
     //First check whether it is one of the LED buttons.
     for (int i = 0;i<LEDButtons.length;i++)
