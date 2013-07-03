@@ -1,16 +1,32 @@
 import java.util.*;
 
+/*
+ * Copyright 2013 Tao Qian
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 /** This is a data visualization project for DePauw University's
-  * BASE (Balloon Assisted Stratospheric Research) 2013.
-  *
-  * It plots the voltage output against time(or altitude) 
-  * graph for eight different LEDs which are used as photometers.
-  * A filtering mechanism is included to allow user to only look 
-  * at LED readings that were taken when the LED is facing a 
-  * specific direction.
-  *
-  * Author: Tao Qian (taoqian_2015@depauw.edu)
-  */ 
+ * BASE (Balloon Assisted Stratospheric Research) 2013.
+ *
+ * It plots the voltage output against time(or altitude) 
+ * graph for eight different LEDs which are used as photometers.
+ * A filtering mechanism is included to allow user to only look 
+ * at LED readings that were taken when the LED is facing a 
+ * specific direction.
+ *
+ * Author: Tao Qian (taoqian_2015@depauw.edu)
+ */
 
 
 FlightData data;//Contains all the data.
@@ -95,13 +111,12 @@ void setup()
   }
   size(800, 650, P3D);
   data = new FlightData(20, 20, 530, 530, leds, time, orientation, altitude, colors);
-  
+
   //Set up UI.
   setUpSliders();
   setUpLEDButtons();
   //Setup Change Mode Button
   changeModeButton = new SquareButton(650, 20, 110, 20, color(255, 150, 0), "Change Mode");
-
 }
 
 void setUpSliders()
@@ -129,7 +144,7 @@ void setUpSliders()
     sliders[i] = new Slider(sliderX, sliderY, sliderW, sliderH, 180, sliderLabels[i]);
     sliderY += sliderH+sliderSpace;
   }
-  
+
   //Initialize the apply button.
   applyButton = new SquareButton(660, 510, 60, 20, color(255, 150, 0), "Apply");
   applyButton.showText = true;
@@ -137,13 +152,15 @@ void setUpSliders()
 
 void setUpLEDButtons()
 {
-  String[] buttonNames = new String[]{"IR940","IR830","Red","Yellow","Green","Blue","V400","UV351"};
+  String[] buttonNames = new String[] {
+    "IR940", "IR830", "Red", "Yellow", "Green", "Blue", "V400", "UV351"
+  };
   LEDButtons = new SquareButton[8];
   int boxX = 120;
   int boxY = 580;
   int boxW = 50;
   int boxH = 50;
-  for(int i = 0;i<LEDButtons.length;i++)
+  for (int i = 0;i<LEDButtons.length;i++)
   {
     LEDButtons[i] = new SquareButton(boxX, boxY, boxW, boxH, colors[i], buttonNames[i]);
     boxX += boxW;
@@ -162,7 +179,7 @@ void draw()
     }
     sliders[i].display();
   }
-  
+
   //If changed, draw a rectange to cover the old one.
   if (redrawOrientation)
   {
@@ -171,8 +188,8 @@ void draw()
     rect(600, 100, 180, 400);
   }
   drawOrientation();//Then draw again.
-  
-  
+
+
   if (mousePressed) 
   {
     //First check whether it is one of the LED buttons.
@@ -196,7 +213,7 @@ void draw()
       window[2] = sliders[5].index;
       needDraw = true;
     }
-    
+
     //If change mode button is pressed, change the mode.
     if (changeModeButton.isOver())
     {
@@ -205,7 +222,7 @@ void draw()
       needDraw = true;
     }
   }
-  
+
   if (!needDraw)
     return;
   background(255);
@@ -255,24 +272,24 @@ void drawOrientation()
   int d = 80;
   pushMatrix();
   translate(690, 180, 0);
-  
+
   noStroke();
   pushMatrix();
-  translate(0,0,d);
+  translate(0, 0, d);
   fill(#1e90ff, 255);
-  ellipse(0,0,15,15);
+  ellipse(0, 0, 15, 15);
   fill(#ffffff, 255);
-  text("N",-4,4);
+  text("N", -4, 4);
   popMatrix();
-  
+
   pushMatrix();
-  translate(-w,0,0);
+  translate(-w, 0, 0);
   fill(#1e90ff, 255);
-  ellipse(0,0,15,15);
+  ellipse(0, 0, 15, 15);
   fill(#ffffff, 255);
-  text("E",-4,4);
+  text("E", -4, 4);
   popMatrix();
-  
+
   rotateX(-radians(sliders[0].index));
   rotateZ(radians(sliders[1].index));
   rotateY(-radians(sliders[2].index));
@@ -280,7 +297,7 @@ void drawOrientation()
   stroke(#B8B8B8);
   fill(#888888, 220);
   box(w, h, d);
-  
+
   translate(0, 0, d/2);
   fill(#CCCC00, 200);
   box(w/2, h/2, 1);
