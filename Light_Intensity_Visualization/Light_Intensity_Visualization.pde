@@ -255,13 +255,32 @@ void drawOrientation()
   int d = 80;
   pushMatrix();
   translate(690, 180, 0);
-  rotateX(radians(sliders[0].index));
+  
+  noStroke();
+  pushMatrix();
+  translate(0,0,d);
+  fill(#1e90ff, 255);
+  ellipse(0,0,15,15);
+  fill(#ffffff, 255);
+  text("N",-4,4);
+  popMatrix();
+  
+  pushMatrix();
+  translate(-w,0,0);
+  fill(#1e90ff, 255);
+  ellipse(0,0,15,15);
+  fill(#ffffff, 255);
+  text("E",-4,4);
+  popMatrix();
+  
+  rotateX(-radians(sliders[0].index));
   rotateZ(radians(sliders[1].index));
-  rotateY(radians(sliders[2].index));
+  rotateY(-radians(sliders[2].index));
   strokeWeight(1);
   stroke(#B8B8B8);
   fill(#888888, 220);
   box(w, h, d);
+  
   translate(0, 0, d/2);
   fill(#CCCC00, 200);
   box(w/2, h/2, 1);

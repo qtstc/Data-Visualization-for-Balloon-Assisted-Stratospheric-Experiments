@@ -3,7 +3,9 @@ import processing.opengl.*;
 
 /**
   * This is the parent class for all visualization modules.
-  * Each of the modules is responsible for visualizing a specific dataset.
+  * Each of the modules is responsible for visualizing a certain type of data.
+  *
+  * Author: Tao Qian (taoqian_2015@depauw.edu)
   */
 abstract class VisualizationModule
 {
@@ -35,16 +37,20 @@ abstract class VisualizationModule
   
   /*
    * Draw a specific data.
-   * The data position is an index for generatedData.
    */
   protected abstract void draw(Float[] data);
   
-  
+  /*
+   * Draw data at a specific location of the generated data
+   */
   public void drawData(int i)
   {
     draw(generatedData.get(i));
   }
   
+  /*
+   * Map data points.
+   */
   protected Float[] map(long startTime,long stopTime,long middleTime,Float[] start, Float[] stop)
   {
     float ratio = ((float)(middleTime-startTime))/((float)(stopTime-startTime));
@@ -54,11 +60,17 @@ abstract class VisualizationModule
    return result; 
   }
   
+  /*
+   * Map and add mapped data point to the ArrayList of generatedData.
+   */
   public void addMapped(long startTime,long stopTime, long middleTime, int dataIndex)
   {
     addGenerated(map(startTime,stopTime,middleTime,originalData.get(dataIndex),originalData.get(dataIndex+1)));
   }
   
+  /*
+   * Add data to the list of generated data
+   */
   public void addGenerated(Float[] generated)
   {
     generatedData.add(generated);

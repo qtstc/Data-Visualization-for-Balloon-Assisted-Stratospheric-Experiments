@@ -6,26 +6,28 @@ class TimelineScrollbar {
   private float x, y;       // x and y position of bar
   private float spos, newspos;    // x position of slider
   private float sposMin, sposMax; // max and min values of slider
-  private boolean over;           // is the mouse over the slider?
-  private boolean locked;
-  private float ratio;
+  private boolean over;           // whether the mouse over the slider
+  private boolean locked; //whether the slider is locked. When locked, slider moves with the mouse
+  private float ratio;  //The ratio between the actually width of the slider and the range it is represneting.
 
   private int cellNumber; // The number of different positions in the scrollbar. Each cell/position correspond to one set of flight data.
-  private float cellWidth;
-  private int index;
+  private float cellWidth; //The actually width of each cell.
+  private int index; //The index in the range represented by the position of the slider.
 
-  static final float timewidth = 130;
-  static final float buttonwidth = 50;
-  static final float sliderwidth = 10;
+  static final float timewidth = 130; //The width of the time label.
+  static final float buttonwidth = 50;//The width of the button.
+  static final float sliderwidth = 10; // The width of the slider.
   
-  private float timex;
-  private float textheight;
-  private float[] trig;
-  private float[] pause;
+  //Below are pre-caculated values to save time during the loop.
+  private float timex;//The x position of the time label.
+  private float textheight;//The height of the text.
+  private float[] trig; //The coordinates of the triganle on the button.
+  private float[] pause;//The coordinates of the two bars on the button.
   
 
-  private boolean playing;
-  SimpleDateFormat sdf;
+  private boolean playing;//Whether the slider is changing value by itself.
+  SimpleDateFormat sdf; //The formatter for the date.
+  
   TimelineScrollbar (float x, float y, int swidth, int sheight, ArrayList<Long> newTime) {
     this.swidth = swidth;
     this.sheight = sheight;
@@ -44,28 +46,43 @@ class TimelineScrollbar {
 
     cellWidth = ((sposMax+sliderwidth) - sposMin)/cellNumber;
     
+    //Pre-calculate values.
     timex = timewidth + x;
     textheight = y+sheight*4/5;
     trig = new float[]{x+timewidth+buttonwidth*2/3,y+sheight/2,x+timewidth+buttonwidth/3,y+sheight/6,x+timewidth+buttonwidth/3,y+sheight*5/6};
     pause = new float[] {x+timewidth+buttonwidth/3,y+sheight/7,buttonwidth/10,sheight*5/7,x+timewidth+buttonwidth*13/24,y+sheight/7,buttonwidth/10,sheight*5/7};
   }
 
+  /**
+    * Update the index based on change in position of slider.
+    */
   private void updateIndex()
   {
     index = (int)((spos - sposMin)/cellWidth);
   }
-
+  
+  /**
+    * Update the position based on change in index.
+    */
   private void updatePos()
   {
     spos = sposMin + ((float)index)*cellWidth;
     newspos = spos;
   }
 
+  /**
+    * Update the index based on the change in position
+    */
   public int getIndex()
   {
     return index;
   }
 
+  /**
+    * Get the the number of indices on the slider.
+    * a is the starting time while 
+    * b is the ending time.
+    */
   private int getCount(long a, long b, long interval)
   {
     long aRes = a%interval;
@@ -74,7 +91,10 @@ class TimelineScrollbar {
     long last = b - b%interval;
     return (int)((last-first)/interval + 1);
   }
-
+  
+  /*
+   * Update the parameters. To be called in the loop.
+   */
   void update() {
     if (playing && !locked)
     {
