@@ -30,6 +30,8 @@ import processing.opengl.*;
   * Author: Tao Qian (taoqian_2015@depauw.edu)
   */ 
 
+String fileName = "78.txt";
+
 TimelineScrollbar timelineScroll;//The timeline scroll bar at the bottom of the software. 
 BufferedReader r;//Used for reading data input.
 //An array of modules. Each module is responsible for 
@@ -64,7 +66,7 @@ void setup() {
   ArrayList<Float[]> heightData = new ArrayList<Float[]>();//HeightModule
 
   //Read data from file and store them in ArrayLists.
-  r = createReader("complete.txt");
+  r = createReader(fileName);
   try {
     String line = r.readLine();
     while (line != null)
@@ -172,8 +174,10 @@ Long readTime(String text)
     int minute = Integer.parseInt(st.nextToken(":"));
     int second = Integer.parseInt(st.nextToken(":"));
     long millisecond = Integer.parseInt(text.substring(dot+1))*10;
+    month -= 1;
     Calendar c = Calendar.getInstance();
     c.set(2013, month, date, hour, minute, second);
+    c.add(Calendar.MILLISECOND,  -14400000);//Change to EDT.
     return c.getTimeInMillis()+millisecond;
 }
 

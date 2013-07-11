@@ -28,6 +28,8 @@ import java.util.*;
  * Author: Tao Qian (taoqian_2015@depauw.edu)
  */
 
+String fileName = "78.txt";
+
 
 FlightData data;//Contains all the data.
 boolean needDraw;//Flag used to indicate that the graph needs to be redrawn.
@@ -89,7 +91,7 @@ void setup()
    *   pitch, roll and heading and the last two being the time and altitude in meters.
    * - Values in the same line are sepreated by a single space.
    */
-  BufferedReader r = createReader("data.txt");
+  BufferedReader r = createReader(fileName);
   try {
     r.readLine();//Get rid of column names.
     String line = r.readLine();
@@ -111,7 +113,6 @@ void setup()
   }
   size(800, 650, P3D);
   data = new FlightData(20, 20, 530, 530, leds, time, orientation, altitude, colors);
-
   //Set up UI.
   setUpSliders();
   setUpLEDButtons();

@@ -31,6 +31,21 @@ class OrientationModule extends VisualizationModule
 
     pushMatrix();
     translate(x, y);
+
+    //Draw the box
+    pushMatrix();
+    rotateX(radians(data[0]));
+    rotateZ(-radians(data[1]));
+    rotateY(radians(data[2]));
+    strokeWeight(2);
+    stroke(#B8B8B8);
+    fill(#888888, 220);
+    box(w, h, d);
+    //draw the breadboard
+    translate(0, 0, d/2);
+    fill(#CCCC00, 200);
+    box(boardw, boardh, 1);
+    popMatrix();
     
     //Draw the label for north
     noStroke();
@@ -44,25 +59,13 @@ class OrientationModule extends VisualizationModule
     
     //Draw the label for east
     pushMatrix();
-    translate(-w/5*4, 0, 0);
+    translate(-w/5*4,0, 0);
     fill(#1e90ff, 255);
     ellipse(0, 0, 15, 15);
     fill(#ffffff, 255);
     text("E", -4, 4);
     popMatrix();
-
-    //Draw the box
-    rotateX(radians(data[0]));
-    rotateZ(-radians(data[1]));
-    rotateY(radians(data[2]));
-    strokeWeight(2);
-    stroke(#B8B8B8);
-    fill(#888888, 220);
-    box(w, h, d);
-    //draw the breadboard
-    translate(0, 0, d/2);
-    fill(#CCCC00, 200);
-    box(boardw, boardh, 1);
+    
     popMatrix();
   }
 
