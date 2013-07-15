@@ -30,7 +30,14 @@ import processing.opengl.*;
   * Author: Tao Qian (taoqian_2015@depauw.edu)
   */ 
 
-String fileName = "78.txt";
+/**
+  * Name of the file we are looking at.
+  * Change this if want to look at data from different flights.
+  * Files need to be stored in the data folder.
+  * If want to include new files, please make sure that the
+  * new file has the same text format as the old file.
+  */
+String fileName = "77.txt";
 
 TimelineScrollbar timelineScroll;//The timeline scroll bar at the bottom of the software. 
 BufferedReader r;//Used for reading data input.

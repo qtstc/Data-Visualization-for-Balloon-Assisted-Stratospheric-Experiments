@@ -28,6 +28,10 @@ import java.util.*;
  * Author: Tao Qian (taoqian_2015@depauw.edu)
  */
 
+
+//Change this to open different files.
+//Files should be kept in the data folder.
+//For text format, please refer to existing data files.
 String fileName = "78.txt";
 
 
@@ -92,6 +96,7 @@ void setup()
    * - Values in the same line are sepreated by a single space.
    */
   BufferedReader r = createReader(fileName);
+  Float maxAltitude = 0.0;
   try {
     r.readLine();//Get rid of column names.
     String line = r.readLine();
@@ -102,7 +107,9 @@ void setup()
         leds.get(i).add(Float.parseFloat(st.nextToken()));
       orientation.add(readFloats(3, st));
       time.add(readTime(st.nextToken()));
-      altitude.add(Float.parseFloat(st.nextToken()));
+      Float nextAlt = Float.parseFloat(st.nextToken());
+      maxAltitude = Math.max(nextAlt,maxAltitude);
+      altitude.add(nextAlt);
       line = r.readLine();
     }
     r.close();
@@ -112,7 +119,7 @@ void setup()
     e.printStackTrace();
   }
   size(800, 650, P3D);
-  data = new FlightData(20, 20, 530, 530, leds, time, orientation, altitude, colors);
+  data = new FlightData(20, 20, 530, 530, leds, time, orientation, altitude, colors,maxAltitude);
   //Set up UI.
   setUpSliders();
   setUpLEDButtons();

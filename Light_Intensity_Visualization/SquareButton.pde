@@ -1,3 +1,6 @@
+/**
+  * Button in the shape of a square.
+  */
 class SquareButton
 {
   int x;

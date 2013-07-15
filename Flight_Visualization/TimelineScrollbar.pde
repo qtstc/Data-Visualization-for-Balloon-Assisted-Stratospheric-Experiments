@@ -1,6 +1,9 @@
 import java.util.Date;
 import java.text.SimpleDateFormat;
 
+/**
+  * A scroll bar which is similar to those in video players.
+  */
 class TimelineScrollbar {
   private int swidth, sheight;    // width and height of bar
   private float x, y;       // x and y position of bar

@@ -1,5 +1,9 @@
 import java.util.*;
 
+/**
+  * This is a visualization module used to visualize the 
+  * the altitude of box in the air.
+  */
 class HeightModule extends VisualizationModule
 {
   private int scale = 1000;//In cm. So we can do integer division and remainder.

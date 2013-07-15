@@ -1,3 +1,6 @@
+/**
+  * Customized slider that allows the user to select a values.
+  */
 class Slider
 {
   private int swidth, sheight;    // width and height of bar

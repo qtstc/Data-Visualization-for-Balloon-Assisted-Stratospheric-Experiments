@@ -4,6 +4,8 @@ import java.util.Date;
 /** Class used for storing flight data.*/
 class FlightData
 {
+  
+  float maxAltitude;
   ArrayList<ArrayList<Float>> ledReadings;
   ArrayList<Float[]> orientationReadings;
   ArrayList<Float> altitudeReadings;
@@ -20,7 +22,7 @@ class FlightData
   int yAxisTextHeight;
   color[] colors;
   
-  FlightData(int x, int y, int w, int h,ArrayList<ArrayList<Float>> ledReadings, ArrayList<Long> time, ArrayList<Float[]> orientationReadings, ArrayList<Float> altitudeReading,color[] colors)
+  FlightData(int x, int y, int w, int h,ArrayList<ArrayList<Float>> ledReadings, ArrayList<Long> time, ArrayList<Float[]> orientationReadings, ArrayList<Float> altitudeReading,color[] colors,Float maxAltitude)
   {
     xAxisTextWidth = 30;
     yAxisTextHeight = 15;
@@ -33,6 +35,7 @@ class FlightData
     this.orientationReadings = orientationReadings;
     this.altitudeReadings = altitudeReading;
     this.colors = colors;
+    this.maxAltitude = (float)Math.ceil(maxAltitude);
     sdf = new SimpleDateFormat("HH:mm:ss");
   }
   
@@ -112,7 +115,7 @@ class FlightData
     //Draw the x axis.
     line(x,y+h,x+w,y+h);
     float startHeight = 0;
-    float endHeight = 13000;
+    float endHeight = maxAltitude;
     float range = endHeight - startHeight;
     float interval = range/(float)10;
     
